@@ -61,6 +61,7 @@ function Signup() {
 
   const [suggestions, setSuggestions] = useState([]);
   const [viewport, setViewport] = useState({
+    // initial viewport setup for map display
     latitude: latitude,
     longitude: longitude,
     zoom: 10,
@@ -173,13 +174,15 @@ function Signup() {
           <Input
             name="location"
             label="Location"
-            placeholder="Glenwood, IL"
+            placeholder="Melbourne, VIC"
             onChange={handleLocationOnChange}
             value={formik.values.location}
           />
 
           {suggestions?.map((item) => (
-            <div key={item.id} onClick={() => handleSuggestionsOnClick(item)}>
+            <div key={item.id}
+              onClick={() => handleSuggestionsOnClick(item)}
+              className="cursor-pointer">
               {item.place_name}
             </div>
           ))}

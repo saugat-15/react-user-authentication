@@ -9,10 +9,11 @@ export default class Api {
   async login(payload) {
     try {
       const email = payload.email;
-
+      //setting up user credentials
       const users = localStorage.getItem("users")
         ? JSON.parse(localStorage.getItem("users"))
         : [];
+      //validating user details with local storage and firebase database
       const user = users.find((user) => user.email === email);
       const firebaseUserEmail = doc(db, "users", email);
 
@@ -34,7 +35,7 @@ export default class Api {
       throw error;
     }
   }
-
+  //register user to the database and localstorage
   async regiser(payload) {
     try {
       const email = payload.email;
@@ -44,7 +45,7 @@ export default class Api {
         : [];
 
       const firebaseUserEmail = doc(db, "users", email);
-
+      //validating if the user alrady exists
       const user = users.find((user) => user.email === email);
       if (user && firebaseUserEmail) {
         throw new Error("User already exists");
@@ -67,14 +68,16 @@ export default class Api {
       throw error;
     }
   }
-
-  async updateUser(id,snapId, payload) {
+  //updating user after the user edit details
+  async updateUser(id, snapId, payload) {
     try {
+      //localstorage data fetch
       const user = JSON.parse(localStorage.getItem("user"));
-
+      //firebase fetchh
       const firebaseUserRef = doc(db, "users", snapId);
       console.log("payload", payload);
       // const res = await updateDoc(firebaseUserRef, { payload, uid: id });
+      //update docc/user
       const res = await updateDoc(firebaseUserRef, { payload });
       console.log("updateRes", res);
 

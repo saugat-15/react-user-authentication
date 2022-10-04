@@ -21,15 +21,19 @@ import { signOut } from "firebase/auth";
 import { Navigate, useNavigate } from "react-router-dom";
 
 function Home() {
+  // establish initial values
   const [user, loading, error] = useAuthState(auth);
   const [currentUser, setCurrentUser] = useState(null);
   const [snapId, setSnapId] = useState(0);
 
+  // using useEffect to avoid unnecessary rerenders
   useEffect(() => {
     if (user) {
       fetchUser();
     }
   }, [user]);
+
+  //fetching user details
 
   const fetchUser = async () => {
     try {
@@ -47,8 +51,10 @@ function Home() {
     }
   };
 
+  // using addToast for displaying success and error popups
   const { addToast } = useToasts();
   const [editModal, setEditModal] = useState(false);
+  // validating user form fields
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email"),
     name: Yup.string().min(3, "Too short"),
@@ -56,7 +62,9 @@ function Home() {
       .min(6)
       .matches(/(?=.*[0-9])/, "Password must contain a number."),
   });
+  // creating a  new instance of API
   const api = new Api();
+  // setting up formik init values
   const formik = useFormik({
     initialValues: {
       name: currentUser?.name,
@@ -67,6 +75,7 @@ function Home() {
     },
     validationSchema,
     onSubmit: async (values) => {
+      // validating user inpust before form submission
       try {
         values.email = values.email ? values.email : currentUser?.email;
         values.name = values.name ? values.name : currentUser?.name;
@@ -77,12 +86,13 @@ function Home() {
         values.password = values.password
           ? values.password
           : currentUser?.password;
-
+// update user details
         await api.updateUser(user?.uid, snapId, values);
         addToast("Profile Updated.", {
           appearance: "success",
           autoDismiss: true,
         });
+        // display updated user details
         await fetchUser();
         setEditModal(false);
       } catch (error) {
@@ -93,13 +103,13 @@ function Home() {
       }
     },
   });
-
+// navigate to login page using react routingggg
   let navigate = useNavigate();
   const routeChange = () => {
     let path = "/login";
     navigate(path);
   };
-
+// handling logouts using firebase auth
   const logOut = async () => {
     await signOut(auth);
     console.log('signout successful');
@@ -108,7 +118,7 @@ function Home() {
       appearance: "success",
   autoDismiss: true  });
   };
-
+// rendering edit user form fields
   const renderEditModal = () => {
     return (
       <div
@@ -187,6 +197,7 @@ function Home() {
   };
 
   return (
+    // rendering welcome screen with user details
     <div className="px-60">
       <h3 className="text-4xl mt-5">Welcome {currentUser?.name}</h3>
 
@@ -219,7 +230,7 @@ function Home() {
           onClick={logOut}
         />
       </div>
-
+{/* if editmodal is trueee rendereditmodal() */}
       {editModal && renderEditModal()}
     </div>
   );
